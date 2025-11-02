@@ -72,8 +72,10 @@ function ExecutionsTable({
                                         <span className="font-semibold">
                                             {execution.id}
                                         </span>
-                                        <div className="text-muted-foreground text-xs">
-                                            <span>Triggered Via</span>
+                                        <div className="text-muted-foreground text-xs ">
+                                            <span className="mr-3">
+                                                Triggered Via
+                                            </span>
                                             <Badge variant={"outline"}>
                                                 {execution.trigger}
                                             </Badge>
