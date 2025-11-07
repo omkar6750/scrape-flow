@@ -2,38 +2,42 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { MobileSidebar } from "./Sidebar";
 
 function BreadCrumbHeader() {
-    const pathName = usePathname();
-    const paths = pathName === "/" ? [""] : pathName?.split("/");
+	const pathName = usePathname();
+	const paths = pathName === "/" ? [""] : pathName?.split("/");
 
-    return (
-        <div className="flex items-center justify-start">
-            <MobileSidebar />
-            <Breadcrumb>
-                <BreadcrumbList>
-                    {paths.map((path, index) => (
-                        <React.Fragment key={index}>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink
-                                    className="capitalize "
-                                    href={`/${path}`}
-                                >
-                                    {path === "" ? "home" : path}
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </React.Fragment>
-                    ))}
-                </BreadcrumbList>
-            </Breadcrumb>
-        </div>
-    );
+	return (
+		<div className="flex items-center justify-start">
+			<MobileSidebar />
+			<Breadcrumb>
+				<BreadcrumbList>
+					{paths.map((path, index) => (
+						<React.Fragment key={index}>
+							<BreadcrumbItem>
+								<BreadcrumbLink
+									className="capitalize "
+									href={`/${path}`}
+								>
+									{path === "" ? "home" : path}
+								</BreadcrumbLink>
+							</BreadcrumbItem>
+							{index !== path.length - 1 && (
+								<BreadcrumbSeparator />
+							)}
+						</React.Fragment>
+					))}
+				</BreadcrumbList>
+			</Breadcrumb>
+		</div>
+	);
 }
 
 export default BreadCrumbHeader;
