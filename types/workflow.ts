@@ -43,3 +43,11 @@ export enum ExecutionPhaseStatus {
 	COMPLETED = "COMPLETED",
 	FAILED = "FAILED",
 }
+
+export type WorkflowExecutionType = Record<
+	string,
+	{
+		success: number;
+		failed: number;
+	}
+>;
