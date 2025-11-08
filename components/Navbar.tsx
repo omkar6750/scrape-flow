@@ -53,7 +53,7 @@ const Navbar = () => {
 								<Link
 									key={link.href}
 									href={link.href}
-									className={`muted-foreground hover:text-foreground rounded-md px-3 py-2 hover:text-primary font-semibold transition-colors ${
+									className={`muted-foreground  rounded-md px-3 py-2 hover:text-primary font-semibold transition-colors ${
 										pathname === link.href
 											? "text-primary unde underline underline-offset-5"
 											: ""

@@ -10,7 +10,7 @@ export default function HomePage() {
 			<Navbar />
 
 			{/* Hero */}
-			<section className="w-full py-16 md:py-24 bg-background relative overflow-hidden rounded-2xl md:rounded-3xl mt-2">
+			<section className="w-full py-16 md:py-24 bg-background relative overflow-hidden rounded-2xl md:rounded-3xl mt-2 h-full">
 				<div
 					aria-hidden="true"
 					className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
@@ -20,23 +20,26 @@ export default function HomePage() {
 					{/* Larger blue-green orb */}
 					<div className="w-[900px] h-[600px] bg-green-600/40 blur-[160px] rounded-full mx-auto mt-40 absolute"></div>
 				</div>
-				<div className="container relative z-10 mx-auto px-4 text-center">
-					<h1 className="text-4xl sm:text-5xl font-bold text-primary">
-						Web Scraping made Easy.
+				<div className=" container relative z-10 mx-auto px-4 text-center flex flex-col items-center ">
+					<h1 className=" text-4xl sm:text-5xl font-semibold text-foreground">
+						Web <span className="text-primary">Scraping</span> made
+						Easy. <br /> Automate with
+						<span className="text-primary"> Drag and Drop</span>
+						Workflows
 					</h1>
-					<p className="mt-4 text-lg sm:text-xl text-foreground">
-						Automate with Drag and Drop Workflows
-					</p>
-					<div className="mt-8">
+					<div className="mt-8 space-x-6">
 						<Button size="lg">Get Started Now</Button>
+						<Button size="lg" variant={"outline"} className="">
+							How it works
+						</Button>
 					</div>
-					<div className="mt-12">
+					<div className="mt-32 rounded-xl max-w-6xl p-3 bg-white bg-opacity-10 ">
 						<Image
 							src="/homePage/Dashboard Image.webp"
 							alt="Scrapeflow Dashboard"
 							width={1200}
 							height={600}
-							className="mx-auto"
+							className="mx-auto rounded-xl"
 						/>
 					</div>
 				</div>
