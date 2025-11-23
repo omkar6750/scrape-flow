@@ -128,7 +128,7 @@ Business logic is implemented as Server Actions in the `/actions` directory:
 
     ```env
     # Database
-    DATABASE_URL="file:./dev.db"
+    DATABASE_TURSO_DATABASE_URL="file:./dev.db"
 
     # Encryption (generate a random 32-character string)
     ENCRYPTION_KEY="your-32-character-encryption-key"
