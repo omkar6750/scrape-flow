@@ -77,14 +77,14 @@ export async function getStatsCardsValue(period: Period) {
 	};
 
 	// Credits consumed (safe)
-	stats.creditsConsumed = executions.reduce<number>(
+	stats.creditsConsumed = executions.reduce(
 		(sum, execution) => sum + (execution.creditsConsumed ?? 0),
-		0
+		0 satisfies number
 	);
 
-	stats.phaseExecutions = executions.reduce<number>(
+	stats.phaseExecutions = executions.reduce(
 		(sum, execution) => sum + (execution.phases?.length ?? 0),
-		0
+		0 satisfies number
 	);
 
 	return stats;
