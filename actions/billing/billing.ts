@@ -4,7 +4,7 @@ import { getCreditsPack, PackId } from "@/lib/billing";
 import { getAppUrl } from "@/lib/helper/appUrl";
 
 import prisma from "@/lib/prisma";
-import { stripe } from "@/lib/stripe/stripe";
+import { getStripe, stripe } from "@/lib/stripe/stripe";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -40,6 +40,11 @@ export async function purchaseCredits(packId: PackId) {
 		throw new Error("Unauthenticated");
 	}
 
+	// Check if Stripe is configured
+	if (!process.env.STRIPE_SECRET_KEY) {
+		throw new Error("Credit purchases are disabled in demo mode");
+	}
+
 	const seletedPack = getCreditsPack(packId);
 
 	if (!seletedPack) {
@@ -47,6 +52,8 @@ export async function purchaseCredits(packId: PackId) {
 	}
 
 	const priceId = seletedPack?.priceId;
+
+	const stripe = getStripe(); // Get Stripe instance lazily
 
 	const session = await stripe.checkout.sessions.create({
 		mode: "payment",

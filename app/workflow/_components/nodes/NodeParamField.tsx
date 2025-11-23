@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { TaskParam, TaskParamType } from "@/types/task";
 import React, { useCallback } from "react";
 import StringParam from "./param/StringParam";
@@ -32,7 +31,7 @@ function NodeParamField({
 				},
 			});
 		},
-		[updateNodeData, param.name, node?.data.inputs]
+		[updateNodeData, param.name, node?.data.inputs, nodeId]
 	);
 	switch (param.type) {
 		case TaskParamType.STRING:

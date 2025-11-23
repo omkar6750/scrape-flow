@@ -6,7 +6,13 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import Logo from "./Logo";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+	SignInButton,
+	SignUpButton,
+	SignedIn,
+	SignedOut,
+	UserButton,
+} from "@clerk/nextjs";
 const Navbar = () => {
 	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -35,7 +41,6 @@ const Navbar = () => {
 		{ href: "/home", label: "Home" },
 		{ href: "/about", label: "About" },
 		{ href: "/pricing", label: "Pricing" },
-		{ href: "/features", label: "Features" },
 	];
 	return (
 		<nav
@@ -75,14 +80,33 @@ const Navbar = () => {
 						</div>
 					</div>
 					{/* signup | signin */}
-					<div className="flex gap-5">
-						<Button variant={"outline"}>
-							<SignInButton></SignInButton>
-						</Button>
-						<Button>
-							<SignUpButton></SignUpButton>
-						</Button>
-					</div>
+					<SignedOut>
+						<div className="flex gap-5">
+							<SignInButton
+								mode="redirect"
+								signUpForceRedirectUrl="/setup"
+							>
+								<button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+									Sign In
+								</button>
+							</SignInButton>
+							<SignUpButton
+								mode="redirect"
+								signInForceRedirectUrl="/setup"
+							>
+								<button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+									Sign Up
+								</button>
+							</SignUpButton>
+						</div>
+					</SignedOut>
+					<SignedIn>
+						<div className="flex gap-3">
+							<Button>Workflows</Button>
+
+							<UserButton />
+						</div>
+					</SignedIn>
 				</div>
 
 				{/* mobile nav menu */}

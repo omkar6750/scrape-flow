@@ -1,10 +1,23 @@
+"use client";
 import Navbar from "@/components/Navbar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+	const router = useRouter();
+	const { isSignedIn } = useAuth();
+
+	const handleGetStarted = () => {
+		if (isSignedIn) {
+			router.push("/workflows");
+		} else {
+			router.push("/sign-up");
+		}
+	};
 	return (
 		<div className="bg-background text-surface">
 			<Navbar />
@@ -28,7 +41,9 @@ export default function HomePage() {
 						Workflows
 					</h1>
 					<div className="mt-8 space-x-6">
-						<Button size="lg">Get Started Now</Button>
+						<Button size="lg" onClick={handleGetStarted}>
+							Get Started Now
+						</Button>
 						<Button size="lg" variant={"outline"} className="">
 							How it works
 						</Button>
@@ -214,9 +229,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"ScrapeFlow has completely transformed our data
+							&quot;ScrapeFlow has completely transformed our data
 							collection process. What used to take days now takes
-							minutes."
+							minutes.&quot;
 						</blockquote>
 					</Card>
 
@@ -239,9 +254,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"ScrapeFlow has helped us stay competitive by
+							&quot;ScrapeFlow has helped us stay competitive by
 							monitoring prices across hundreds of websites
-							automatically."
+							automatically.&quot;
 						</blockquote>
 					</Card>
 
@@ -264,9 +279,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"The ease of use and powerful features make
+							&quot;The ease of use and powerful features make
 							ScrapeFlow the perfect tool for our market research
-							needs."
+							needs.&quot;
 						</blockquote>
 					</Card>
 
@@ -289,8 +304,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"We've tried many scraping tools, but ScrapeFlow is
-							by far the most reliable and easiest to use."
+							&quot;We&apos;ve tried many scraping tools, but
+							ScrapeFlow is by far the most reliable and easiest
+							to use.&quot;
 						</blockquote>
 					</Card>
 
@@ -313,9 +329,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"The no-code approach saves us countless development
-							hours while still giving us the flexibility we
-							need."
+							&quot;The no-code approach saves us countless
+							development hours while still giving us the
+							flexibility we need.&quot;
 						</blockquote>
 					</Card>
 
@@ -338,9 +354,9 @@ export default function HomePage() {
 							</div>
 						</div>
 						<blockquote className="text-base text-left font-extralight italic">
-							"The data quality and reliability of ScrapeFlow is
-							unmatched. It's become an essential part of our
-							toolkit."
+							&quot;The data quality and reliability of ScrapeFlow
+							is unmatched. It&apos;s become an essential part of
+							our toolkit.&quot;
 						</blockquote>
 					</Card>
 
@@ -355,10 +371,14 @@ export default function HomePage() {
 				</h2>
 				<p className="mt-4 text-lg">
 					Sign up today and launch your first scraping workflows with
-					100 free credits. No credit card needed.
+					200 free credits. No credit card needed.
 				</p>
 				<div className="mt-8">
-					<Button variant="secondary" size="lg">
+					<Button
+						onClick={handleGetStarted}
+						variant="secondary"
+						size="lg"
+					>
 						Start Free Trial
 					</Button>
 				</div>

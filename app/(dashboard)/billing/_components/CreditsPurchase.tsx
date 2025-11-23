@@ -20,15 +20,15 @@ import { purchaseCredits } from "@/actions/billing/billing";
 function CreditsPurchase() {
 	const [selectedPack, setSelectedPack] = useState(PackId.MEDIUM);
 
-	const mutation = useMutation({
-		mutationFn: purchaseCredits,
-		onSuccess: () => {
-			toast.success("Credits credited successfully", { id: "purchase" });
-		},
-		onError: () => {
-			toast.success("Something went wrong", { id: "purchase" });
-		},
-	});
+	// const mutation = useMutation({
+	// 	mutationFn: purchaseCredits,
+	// 	onSuccess: () => {
+	// 		toast.success("Credits credited successfully", { id: "purchase" });
+	// 	},
+	// 	onError: () => {
+	// 		toast.success("Something went wrong", { id: "purchase" });
+	// 	},
+	// });
 
 	return (
 		<Card>
@@ -71,8 +71,13 @@ function CreditsPurchase() {
 			<CardFooter>
 				<Button
 					className="w-full"
-					disabled={mutation.isPending}
-					onClick={() => mutation.mutate(selectedPack)}
+					// disabled={mutation.isPending}
+					// onClick={() => mutation.mutate(selectedPack)}
+					onClick={() =>
+						toast.error(
+							"This is demo mode! Please use free credits for now."
+						)
+					}
 				>
 					<CreditCardIcon className="h-5 w-5 mr-2" />
 					Purchase credits

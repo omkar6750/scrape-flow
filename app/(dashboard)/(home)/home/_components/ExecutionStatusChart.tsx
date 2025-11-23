@@ -66,9 +66,7 @@ function ExecutionStatusChart({ data }: { data: ChartData }) {
 								});
 							}}
 						/>
-						<ChartLegend
-							content={<ChartLegendContent payload={""} />}
-						/>
+						<ChartLegend content={<ChartLegendContent />} />
 						<ChartTooltip
 							content={
 								<ChartTooltipContent className="w-[250px]" />
