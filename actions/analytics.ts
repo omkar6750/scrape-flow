@@ -76,13 +76,16 @@ export async function getStatsCardsValue(period: Period) {
 
 	// Total workflow credits
 	stats.creditsConsumed = executions.reduce<number>(
-		(sum, execution) => sum + execution.creditsConsumed,
+		(sum: number, execution: { creditsConsumed: number }) =>
+			sum + execution.creditsConsumed,
 		0
 	);
-
 	// Total phase executions
 	stats.phaseExecutions = executions.reduce<number>(
-		(sum, execution) => sum + execution.phases.length,
+		(
+			sum: number,
+			execution: { phases: { creditsConsumed: number | null }[] }
+		) => sum + execution.phases.length,
 		0
 	);
 
