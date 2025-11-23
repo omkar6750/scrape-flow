@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
 		return Response.json({ error: "Unauthorized" }, { status: 401 });
 	}
-	const secret = authHeader.split(" ")[1];
+	const secret = authHeader.split(" ")[1] ?? "";
 
 	if (!isValidSecret(secret)) {
 		return Response.json({ error: "Unauthorized" }, { status: 401 });

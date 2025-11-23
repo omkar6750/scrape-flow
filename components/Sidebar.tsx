@@ -35,7 +35,7 @@ const routes = [
 		label: "Billing",
 		icon: CoinsIcon,
 	},
-];
+] as const;
 function DesktopSidebar() {
 	const pathname = usePathname();
 	const activeRoute =

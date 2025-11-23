@@ -12,7 +12,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eachDayOfInterval, format } from "date-fns";
 
 /* -----------------------------------------------------------
-   1. GET ALL PERIODS (YEAR & MONTH COMBINATIONS)
+   1. GET ALL PERIODS
 ------------------------------------------------------------ */
 export async function getPeriods() {
 	const { userId } = await auth();
@@ -24,9 +24,8 @@ export async function getPeriods() {
 	});
 
 	const currentYear = new Date().getFullYear();
-	const minYear = years._min.startedAt
-		? years._min.startedAt.getFullYear()
-		: currentYear;
+
+	const minYear = years._min.startedAt?.getFullYear() ?? currentYear;
 
 	const periods: Period[] = [];
 
@@ -40,7 +39,7 @@ export async function getPeriods() {
 }
 
 /* -----------------------------------------------------------
-   2. STATS CARDS (EXECUTIONS COUNT / PHASE COUNT / CREDITS)
+   2. STATS CARDS
 ------------------------------------------------------------ */
 export async function getStatsCardsValue(period: Period) {
 	const { userId } = await auth();
@@ -51,7 +50,10 @@ export async function getStatsCardsValue(period: Period) {
 	const executions = await prisma.workflowExecution.findMany({
 		where: {
 			userId,
-			startedAt: { gte: dateRange.startDate, lte: dateRange.endDate },
+			startedAt: {
+				gte: dateRange.startDate,
+				lte: dateRange.endDate,
+			},
 			status: {
 				in: [
 					WorkflowExecutionStatus.COMPLETED,
@@ -74,18 +76,15 @@ export async function getStatsCardsValue(period: Period) {
 		phaseExecutions: 0,
 	};
 
-	// Total workflow credits
-	stats.creditsConsumed = executions.reduce<number>(
-		(sum: number, execution: { creditsConsumed: number }) =>
-			sum + execution.creditsConsumed,
+	// Credits consumed (safe)
+	stats.creditsConsumed = executions.reduce(
+		(sum, execution) => sum + (execution.creditsConsumed ?? 0),
 		0
 	);
-	// Total phase executions
-	stats.phaseExecutions = executions.reduce<number>(
-		(
-			sum: number,
-			execution: { phases: { creditsConsumed: number | null }[] }
-		) => sum + execution.phases.length,
+
+	// Phases executed (safe)
+	stats.phaseExecutions = executions.reduce(
+		(sum, execution) => sum + (execution.phases?.length ?? 0),
 		0
 	);
 
@@ -93,7 +92,7 @@ export async function getStatsCardsValue(period: Period) {
 }
 
 /* -----------------------------------------------------------
-   3. DAILY EXECUTION STATUS (SUCCESS / FAILED)
+   3. DAILY EXECUTION STATUS
 ------------------------------------------------------------ */
 export async function getWorkflowExecutionsStats(period: Period) {
 	const { userId } = await auth();
@@ -104,7 +103,10 @@ export async function getWorkflowExecutionsStats(period: Period) {
 	const executions = await prisma.workflowExecution.findMany({
 		where: {
 			userId,
-			startedAt: { gte: dateRange.startDate, lte: dateRange.endDate },
+			startedAt: {
+				gte: dateRange.startDate,
+				lte: dateRange.endDate,
+			},
 			status: {
 				in: [
 					WorkflowExecutionStatus.COMPLETED,
@@ -114,19 +116,25 @@ export async function getWorkflowExecutionsStats(period: Period) {
 		},
 	});
 
-	// Initialize empty stats for each day in the period
-	const stats: WorkflowExecutionType = eachDayOfInterval({
+	type DailyCount = { success: number; failed: number };
+	const stats: Record<string, DailyCount> = eachDayOfInterval({
 		start: dateRange.startDate,
 		end: dateRange.endDate,
 	})
-		.map((date) => format(date, "yyyy-MM-dd"))
+		.map((d) => format(d, "yyyy-MM-dd"))
 		.reduce((acc, date) => {
 			acc[date] = { success: 0, failed: 0 };
 			return acc;
-		}, {} as WorkflowExecutionType);
+		}, {} as Record<string, DailyCount>);
 
-	executions.forEach((execution: (typeof executions)[number]) => {
-		const date = format(execution.startedAt!, "yyyy-MM-dd");
+	executions.forEach((execution) => {
+		const startedAt = execution.startedAt;
+		if (!startedAt) return;
+
+		const date = format(startedAt, "yyyy-MM-dd");
+
+		// ensure entry exists (type-checker happy and safe runtime)
+		if (!stats[date]) stats[date] = { success: 0, failed: 0 };
 
 		if (execution.status === WorkflowExecutionStatus.COMPLETED) {
 			stats[date].success += 1;
@@ -142,9 +150,8 @@ export async function getWorkflowExecutionsStats(period: Period) {
 		...info,
 	}));
 }
-
 /* -----------------------------------------------------------
-   4. CREDITS USAGE PER DAY IN PERIOD
+   4. DAILY CREDITS USAGE
 ------------------------------------------------------------ */
 export async function getCreditsUsageInPeriod(period: Period) {
 	const { userId } = await auth();
@@ -155,30 +162,36 @@ export async function getCreditsUsageInPeriod(period: Period) {
 	const executions = await prisma.workflowExecution.findMany({
 		where: {
 			userId,
-			startedAt: { gte: dateRange.startDate, lte: dateRange.endDate },
+			startedAt: {
+				gte: dateRange.startDate,
+				lte: dateRange.endDate,
+			},
 		},
 	});
 
-	// Initialize credits stats for each day in the range
-	const stats: WorkflowExecutionType = eachDayOfInterval({
+	type DailyCredits = { success: number; failed: number };
+	const stats: Record<string, DailyCredits> = eachDayOfInterval({
 		start: dateRange.startDate,
 		end: dateRange.endDate,
 	})
-		.map((date) => format(date, "yyyy-MM-dd"))
+		.map((d) => format(d, "yyyy-MM-dd"))
 		.reduce((acc, date) => {
 			acc[date] = { success: 0, failed: 0 };
 			return acc;
-		}, {} as WorkflowExecutionType);
+		}, {} as Record<string, DailyCredits>);
 
-	executions.forEach((execution: (typeof executions)[number]) => {
-		const date = format(execution.startedAt!, "yyyy-MM-dd");
+	executions.forEach((execution) => {
+		if (!execution.startedAt) return;
 
-		const credits = execution.creditsConsumed || 0;
+		const date = format(execution.startedAt, "yyyy-MM-dd");
+		const credits = execution.creditsConsumed ?? 0;
+
+		// ensure entry exists
+		if (!stats[date]) stats[date] = { success: 0, failed: 0 };
 
 		if (execution.status === WorkflowExecutionStatus.COMPLETED) {
 			stats[date].success += credits;
 		}
-
 		if (execution.status === WorkflowExecutionStatus.FAILED) {
 			stats[date].failed += credits;
 		}

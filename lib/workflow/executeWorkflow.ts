@@ -161,7 +161,7 @@ async function executeWorkflowPhase(
 		data: {
 			status: ExecutionPhaseStatus.RUNNING,
 			startedAt,
-			inputs: JSON.stringify(enviroment.phases[node.id].inputs),
+			inputs: JSON.stringify(enviroment.phases[node.id]?.inputs ?? {}),
 		},
 	});
 
@@ -176,7 +176,7 @@ async function executeWorkflowPhase(
 		success = await executePhase(phase, node, enviroment, logCollector);
 	}
 
-	const outputs = enviroment.phases[node.id].outputs;
+	const outputs = enviroment.phases[node.id]?.outputs ?? {};
 	await finalizePhase(
 		phase.id,
 		success,
@@ -252,7 +252,8 @@ function setUpEnviromentForPhase(
 		if (input.type === TaskParamType.BROWSER_INSTANCE) continue;
 		const inputValue = node.data.inputs[input.name];
 		if (inputValue) {
-			enviroment.phases[node.id].inputs[input.name] = inputValue;
+			enviroment.phases[node.id]!.inputs[input.name] = inputValue;
+
 			continue;
 		}
 		// Get input value from outside in the enviroment
@@ -270,10 +271,11 @@ function setUpEnviromentForPhase(
 			continue;
 		}
 		const outputValue =
-			enviroment.phases[connectedEdge.source].outputs[
-				connectedEdge.sourceHandle!
-			];
-		enviroment.phases[node.id].inputs[input.name] = outputValue;
+			enviroment.phases[connectedEdge.source]?.outputs[
+				connectedEdge.sourceHandle ?? ""
+			] ?? "";
+
+		enviroment.phases[node.id]!.inputs[input.name] = outputValue;
 	}
 }
 
@@ -283,9 +285,14 @@ function createExecutionEnviroment(
 	LogCollector: LogCollector
 ): ExecutionEnviroment<any> {
 	return {
-		getInput: (name: string) => enviroment.phases[node.id]?.inputs[name],
+		getInput: (name: string) =>
+			enviroment.phases[node.id]?.inputs[name] ?? "",
+
 		setOutput: (name: string, value: string) => {
-			enviroment.phases[node.id].outputs[name] = value;
+			(enviroment.phases[node.id] ??= {
+				inputs: {},
+				outputs: {},
+			}).outputs[name] = value;
 		},
 		getBrowser: () => enviroment.browser,
 		setBrowser: (browser: Browser) => (enviroment.browser = browser),

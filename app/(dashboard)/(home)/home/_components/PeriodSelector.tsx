@@ -26,7 +26,7 @@ function PeriodSelector({
 		<Select
 			value={`${selectedPeriod.month}-${selectedPeriod.year}`}
 			onValueChange={(value) => {
-				const [month, year] = value.split("-");
+				const [month = "", year = ""] = value.split("-");
 				const params = new URLSearchParams(searchParams);
 				params.set("month", month);
 				params.set("year", year);
