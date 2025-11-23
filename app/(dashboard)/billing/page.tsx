@@ -84,7 +84,8 @@ async function CreditUsageCard() {
 }
 
 async function TransactionHistory() {
-	const purchases = await getUserPurchases();
+	const purchases: Awaited<ReturnType<typeof getUserPurchases>> =
+		await getUserPurchases();
 
 	return (
 		<Card>
@@ -101,12 +102,13 @@ async function TransactionHistory() {
 				{purchases.length === 0 && (
 					<p className="text-muted-foreground">No transactions yet</p>
 				)}
+
 				{purchases.map((purchase) => (
 					<div
 						key={purchase.id}
 						className="flex justify-between items-center py-3 border-b last:border-b-0"
 					>
-						<div className="">
+						<div>
 							<p className="font-medium">
 								{formatDate(purchase.date)}
 							</p>
