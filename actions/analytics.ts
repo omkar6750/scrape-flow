@@ -87,13 +87,16 @@ export async function getStatsCardsValue(period: Period) {
 		creditsConsumed: 0,
 		phaseExecutions: 0,
 	};
-	stats.creditsConsumed = executions.reduce<number>(
-		(sum, execution) => sum + execution.creditsConsumed,
+	stats.creditsConsumed = executions.reduce(
+		(sum: number, execution: { creditsConsumed: number }) =>
+			sum + execution.creditsConsumed,
 		0
 	);
-
-	stats.phaseExecutions = executions.reduce<number>(
-		(sum, execution) => sum + execution.phases.length,
+	stats.phaseExecutions = executions.reduce(
+		(
+			sum: number,
+			execution: { phases: { creditsConsumed: number | null }[] }
+		) => sum + execution.phases.length,
 		0
 	);
 
