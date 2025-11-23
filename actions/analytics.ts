@@ -9,6 +9,7 @@ import {
 } from "@/types/workflow";
 
 import { auth } from "@clerk/nextjs/server";
+import { WorkflowExecution } from "@prisma/client";
 import { eachDayOfInterval, format } from "date-fns";
 
 /* -----------------------------------------------------------
@@ -138,7 +139,7 @@ export async function getWorkflowExecutionsStats(period: Period) {
 			return acc;
 		}, {} as Record<string, DailyCount>);
 
-	executions.forEach((execution) => {
+	executions.forEach((execution: WorkflowExecution) => {
 		const startedAt = execution.startedAt;
 		if (!startedAt) return;
 
