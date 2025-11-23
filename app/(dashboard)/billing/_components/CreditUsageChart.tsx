@@ -70,7 +70,9 @@ function CreditUsageChart({
 								});
 							}}
 						/>
-						<ChartLegend content={<ChartLegendContent />} />
+						<ChartLegend
+							content={<ChartLegendContent payload={[]} />}
+						/>
 						<ChartTooltip
 							content={
 								<ChartTooltipContent className="w-[250px]" />
