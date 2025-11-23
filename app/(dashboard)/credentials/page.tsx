@@ -1,4 +1,3 @@
-import { GetCredentialsForUser } from "@/actions/credentials/getCredentialsForUser";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,6 +6,7 @@ import React, { Suspense } from "react";
 import CreateCredentialDialog from "./_components/CreateCredentialDialog";
 import { formatDistanceToNow } from "date-fns";
 import DeleteCredentialDialog from "./_components/DeleteCredentialDialog";
+import { headers } from "next/headers";
 
 function CredentialsPage() {
 	return (
@@ -40,7 +40,25 @@ function CredentialsPage() {
 export default CredentialsPage;
 
 async function UserCredentials() {
-	const credentials = await GetCredentialsForUser();
+	const res = await fetch(
+		`${process.env.NEXT_PUBLIC_APP_URL}/api/credentials/list`,
+		{
+			headers: {
+				cookie: headers().get("cookie") ?? "",
+			},
+			cache: "no-store",
+		}
+	);
+
+	if (!res.ok) return <div>Something went wrong</div>;
+
+	const credentials = await res.json();
+
+	// Normalize dates
+	credentials.forEach((c: any) => {
+		c.createdAt = new Date(c.createdAt);
+	});
+
 	if (!credentials) {
 		return <div>Something went wrong</div>;
 	}
@@ -65,7 +83,7 @@ async function UserCredentials() {
 	}
 	return (
 		<div className="flex gap-2 flex-wrap">
-			{credentials.map((credential) => {
+			{credentials.map((credential: any) => {
 				const createdAt = formatDistanceToNow(credential.createdAt, {
 					addSuffix: true,
 				});

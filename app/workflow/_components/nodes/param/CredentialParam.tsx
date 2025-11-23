@@ -1,8 +1,7 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import { ParamProps } from "@/types/appNode";
-import React, { useEffect, useId, useState } from "react";
+import React, { useId } from "react";
 
 import { Label } from "@/components/ui/label";
 import {
@@ -15,7 +14,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { GetCredentialsForUser } from "@/actions/credentials/getCredentialsForUser";
 
 function CredentialParam({
 	param,
@@ -26,7 +24,16 @@ function CredentialParam({
 	const id = useId();
 	const query = useQuery({
 		queryKey: ["credentials-for-user"],
-		queryFn: () => GetCredentialsForUser(),
+		queryFn: async () => {
+			const res = await fetch("/api/credentials/list");
+			const data = await res.json();
+
+			return data.map((cred: any) => ({
+				...cred,
+				createdAt: new Date(cred.createdAt),
+			}));
+		},
+
 		refetchInterval: 10000,
 	});
 	return (
@@ -45,7 +52,7 @@ function CredentialParam({
 				<SelectContent>
 					<SelectGroup>
 						<SelectLabel>Credentials</SelectLabel>
-						{query.data?.map((credential) => (
+						{query.data?.map((credential: any) => (
 							<SelectItem
 								value={credential.id}
 								key={credential.id}

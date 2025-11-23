@@ -16,15 +16,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
 	createCredentialSchema,
 	createCredentialSchemaType,
 } from "@/schema/credential";
-import { createCredential } from "@/actions/credentials/createCredential";
+import { useRouter } from "next/navigation";
 
 function CreateCredentialDialog({ triggerText }: { triggerText?: String }) {
+	const router = useRouter();
+	const queryClient = useQueryClient();
+
 	const [open, setOpen] = useState(false);
 
 	const form = useForm<createCredentialSchemaType>({
@@ -33,11 +36,28 @@ function CreateCredentialDialog({ triggerText }: { triggerText?: String }) {
 	});
 
 	const { mutate, isPending } = useMutation({
-		mutationFn: createCredential,
+		mutationFn: async (values: createCredentialSchemaType) => {
+			const res = await fetch("/api/credentials/create", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(values),
+			});
+
+			if (!res.ok) {
+				throw new Error("Failed to create credential");
+			}
+
+			return await res.json();
+		},
+
 		onSuccess: () => {
 			toast.success("Credential created", { id: "create-credential" });
 			setOpen(false);
 			form.reset();
+			queryClient.invalidateQueries({
+				queryKey: ["credentials-for-user"],
+			});
+			router.refresh();
 		},
 		onError: () => {
 			toast.error("Failed to create error", { id: "create-credential" });

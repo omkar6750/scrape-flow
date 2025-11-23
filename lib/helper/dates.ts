@@ -1,12 +1,22 @@
 import { Period } from "@/types/analytics";
 import { endOfMonth, intervalToDuration, startOfMonth } from "date-fns";
 
+function toDateSafe(value: Date | string | null | undefined) {
+	if (!value) return null;
+	return value instanceof Date ? value : new Date(value);
+}
+
 export function DatesToDurationString(
-	end: Date | null | undefined,
-	start: Date | null | undefined
+	end: Date | string | null | undefined,
+	start: Date | string | null | undefined
 ) {
-	if (!start || !end) return null;
-	const timeElapsed = end.getTime() - start.getTime();
+	const endDate = toDateSafe(end);
+	const startDate = toDateSafe(start);
+
+	if (!startDate || !endDate) return null;
+
+	const timeElapsed = endDate.getTime() - startDate.getTime();
+
 	if (timeElapsed < 1000) {
 		return `${timeElapsed}ms`;
 	}

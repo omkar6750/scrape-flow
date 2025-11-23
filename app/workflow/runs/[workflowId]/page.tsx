@@ -1,8 +1,8 @@
-import { GetWorkflowExecutions } from "@/actions/workflows/getWorkflowExecutions";
 import Topbar from "../../_components/topbar/Topbar";
 import { Suspense } from "react";
 import { InboxIcon, Loader2Icon } from "lucide-react";
 import ExecutionsTable from "./_components/ExecutionsTable";
+import { GetWorkflowExecutions } from "@/actions/workflows/getWorkflowExecutions";
 
 export default function ExecutionPage({
 	params,

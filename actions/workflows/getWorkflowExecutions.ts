@@ -4,17 +4,17 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
 export async function GetWorkflowExecutions(workflowId: string) {
-    const { userId } = auth();
-    if (!userId) {
-        throw new Error("unauthorised");
-    }
-    return prisma.workflowExecution.findMany({
-        where: {
-            workflowId,
-            userId,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
+	const { userId } = auth();
+	if (!userId) {
+		throw new Error("unauthorised");
+	}
+	return prisma.workflowExecution.findMany({
+		where: {
+			workflowId,
+			userId,
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
 }

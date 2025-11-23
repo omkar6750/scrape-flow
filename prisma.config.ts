@@ -9,6 +9,6 @@ export default defineConfig({
 	},
 
 	datasource: {
-		url: env("LOCAL_DATABASE_URL"),
+		url: env("DATABASE_TURSO_DATABASE_URL"),
 	},
 });

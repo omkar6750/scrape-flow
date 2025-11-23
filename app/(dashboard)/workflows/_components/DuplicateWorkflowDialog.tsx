@@ -3,15 +3,12 @@ import CustomDialogHeader from "@/components/CustomDialogHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
-	createWorkflowSchema,
-	createWorkflowSchemaType,
 	duplicateWorkflowSchema,
 	duplicateWorkflowSchemaType,
 } from "@/schema/workflow";
 import { CopyIcon, Layers2Icon, Loader2 } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Form,
@@ -20,13 +17,11 @@ import {
 	FormField,
 	FormItem,
 	FormLabel,
-	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { DuplicateWorkflow } from "@/actions/workflows/duplicateWorkflow";
 import { cn } from "@/lib/utils";
 
 function DuplicateWorkflowDialog({ workflowId }: { workflowId?: string }) {
@@ -40,13 +35,25 @@ function DuplicateWorkflowDialog({ workflowId }: { workflowId?: string }) {
 	});
 
 	const { mutate, isPending } = useMutation({
-		mutationFn: DuplicateWorkflow,
+		mutationFn: async (values: duplicateWorkflowSchemaType) => {
+			const res = await fetch("/api/workflows/duplicate", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(values), // SAME PAYLOAD
+			});
+
+			if (!res.ok) throw new Error("Failed to duplicate workflow");
+
+			return await res.json(); // full duplicated workflow
+		},
+
 		onSuccess: () => {
 			toast.success("Workflow duplicated", { id: "duplicate-workflow" });
-			setOpen((prev) => !prev);
+			setOpen(false);
 		},
+
 		onError: () => {
-			toast.error("Failed to duplicate error", {
+			toast.error("Failed to duplicate workflow", {
 				id: "duplicate-workflow",
 			});
 		},

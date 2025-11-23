@@ -102,7 +102,7 @@ const Navbar = () => {
 					</SignedOut>
 					<SignedIn>
 						<div className="flex gap-3">
-							<Button>Workflows</Button>
+							<Link href={"/workflows"}></Link>
 
 							<UserButton />
 						</div>

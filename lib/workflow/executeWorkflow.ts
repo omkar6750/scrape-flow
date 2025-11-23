@@ -44,7 +44,8 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
 			phase,
 			enviroment,
 			edges,
-			execution.userId
+			execution.userId,
+			execution.workflowId
 		);
 		creditsConsumed += phaseExecution.creditsConsumed;
 		if (!phaseExecution.success) {
@@ -143,7 +144,8 @@ async function executeWorkflowPhase(
 	phase: ExecutionPhase,
 	enviroment: Enviroment,
 	edges: Edge[],
-	userId: string
+	userId: string,
+	workflowId: string
 ) {
 	const logCollector = createLogCollector();
 
@@ -168,6 +170,7 @@ async function executeWorkflowPhase(
 	let success = await decrementCredits(userId, creditsRequired, logCollector);
 	const creditsConsumed = success ? creditsRequired : 0;
 
+	revalidatePath(`/workflow/runs/${workflowId}/${phase.workflowExecutionId}`);
 	if (success) {
 		// we can execute the phase if credits are sufficient
 		success = await executePhase(phase, node, enviroment, logCollector);
@@ -180,6 +183,7 @@ async function executeWorkflowPhase(
 		outputs,
 		logCollector,
 		creditsConsumed
+		// workflowId
 	);
 	return { success, creditsConsumed };
 }
@@ -190,6 +194,7 @@ async function finalizePhase(
 	outputs: any,
 	logCollector: LogCollector,
 	creditsConsumed: number
+	// workflowId: string
 ) {
 	const finalStatus = success
 		? ExecutionPhaseStatus.COMPLETED
@@ -215,6 +220,7 @@ async function finalizePhase(
 			},
 		},
 	});
+	// revalidatePath(`/workflow/runs/${workflowId}/${phase.executionId}`);
 }
 
 async function executePhase(

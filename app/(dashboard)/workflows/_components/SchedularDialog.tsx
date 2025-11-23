@@ -15,12 +15,10 @@ import { Button } from "@/components/ui/button";
 import CustomDialogHeader from "@/components/CustomDialogHeader";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
-import { UpdateWorkflowCron } from "@/actions/workflows/updateWorkflowCron";
 import { toast } from "sonner";
 import cronstrue from "cronstrue";
 import { cn } from "@/lib/utils";
 import { CronExpressionParser } from "cron-parser";
-import { RemoveWorkflowSchedule } from "@/actions/workflows/removeWorkflowSchedule";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
 export default function SchedularDialog(props: {
@@ -32,7 +30,18 @@ export default function SchedularDialog(props: {
 	const [readableCron, setReadableCron] = useState("");
 
 	const mutation = useMutation({
-		mutationFn: UpdateWorkflowCron,
+		mutationFn: async (values: { id: string; cron: string }) => {
+			const res = await fetch("/api/workflows/schedule/update", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(values),
+			});
+
+			if (!res.ok) throw new Error("Failed to update schedule");
+
+			return await res.json();
+		},
+
 		onSuccess: () => {
 			toast.success("Schedule updated successfully", { id: "cron" });
 		},
@@ -42,10 +51,24 @@ export default function SchedularDialog(props: {
 	});
 
 	const removeScheduleMutation = useMutation({
-		mutationFn: RemoveWorkflowSchedule,
+		mutationFn: async (workflowId: string) => {
+			const res = await fetch("/api/workflows/schedule/remove", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ id: workflowId }),
+			});
+
+			if (!res.ok) {
+				throw new Error("Failed to remove schedule");
+			}
+
+			return await res.json();
+		},
+
 		onSuccess: () => {
 			toast.success("Schedule removed successfully", { id: "cron" });
 		},
+
 		onError: () => {
 			toast.error("Something went wrong", { id: "cron" });
 		},

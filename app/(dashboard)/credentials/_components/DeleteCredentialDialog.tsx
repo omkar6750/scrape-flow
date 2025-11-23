@@ -1,7 +1,5 @@
 "use client";
 
-import { DeleteCredential } from "@/actions/credentials/deleteCredential";
-import { DeleteWorkflow } from "@/actions/workflows/deleteWorkflow";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -15,8 +13,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ro } from "date-fns/locale";
 import { XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -25,13 +25,33 @@ interface Props {
 }
 
 function DeleteCredentialDialog({ name }: Props) {
+	const router = useRouter();
+	const queryClient = useQueryClient();
+
 	const [open, setOpen] = useState(false);
 	const [confirmText, setConfirmText] = useState("");
 
 	const deleteMutation = useMutation({
-		mutationFn: DeleteCredential,
+		mutationFn: async (name: string) => {
+			const res = await fetch("/api/credentials/delete", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name }),
+			});
+
+			if (!res.ok) {
+				throw new Error("Failed to delete credential");
+			}
+
+			return await res.json();
+		},
+
 		onSuccess: () => {
 			toast.success("Credential deleted successfully", { id: name });
+			queryClient.invalidateQueries({
+				queryKey: ["credentials-for-user"],
+			});
+			router.refresh();
 		},
 		onError: () => {
 			toast.error("Something went wrong");
