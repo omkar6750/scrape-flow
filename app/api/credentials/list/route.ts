@@ -1,10 +1,11 @@
 // app/api/credentials/list/route.ts
-export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 export async function GET() {
 	try {
 		const { userId } = auth();
