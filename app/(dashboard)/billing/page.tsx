@@ -103,7 +103,7 @@ async function TransactionHistory() {
 					<p className="text-muted-foreground">No transactions yet</p>
 				)}
 
-				{purchases.map((purchase) => (
+				{purchases.map((purchase: any) => (
 					<div
 						key={purchase.id}
 						className="flex justify-between items-center py-3 border-b last:border-b-0"
