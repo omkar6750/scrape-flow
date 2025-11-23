@@ -191,7 +191,7 @@ export async function getCreditsUsageInPeriod(period: Period) {
 			return acc;
 		}, {} as Record<string, DailyCredits>);
 
-	executions.forEach((execution) => {
+	executions.forEach((execution: any) => {
 		if (!execution.startedAt) return;
 
 		const date = format(execution.startedAt, "yyyy-MM-dd");
