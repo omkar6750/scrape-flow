@@ -1,8 +1,6 @@
 import { getAppUrl } from "@/lib/helper/appUrl";
 import prisma from "@/lib/prisma";
 import { WorkflowStatus } from "@/types/workflow";
-import { error } from "console";
-import { Signal, Store } from "lucide-react";
 
 export async function GET(req: Request) {
 	const now = new Date();
@@ -16,7 +14,7 @@ export async function GET(req: Request) {
 			nextRunAt: { lte: now },
 		},
 	});
-	console.log("@@WORKFLOW TO RUN", workflows.length);
+
 	for (const workflow of workflows) {
 		triggerWorkflow(workflow.id);
 	}

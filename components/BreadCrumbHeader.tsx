@@ -9,6 +9,7 @@ import {
 	BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { MobileSidebar } from "./Sidebar";
+import { HomeIcon } from "lucide-react";
 
 function BreadCrumbHeader() {
 	const pathName = usePathname();
@@ -26,7 +27,11 @@ function BreadCrumbHeader() {
 									className="capitalize "
 									href={`/${path}`}
 								>
-									{path === "" ? "home" : path}
+									{path === "" ? (
+										<HomeIcon size={16} />
+									) : (
+										path
+									)}
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							{index !== path.length - 1 && (

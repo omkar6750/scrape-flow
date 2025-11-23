@@ -28,7 +28,6 @@ export async function UpdateWorkflowCron({
 			},
 		});
 	} catch (error: any) {
-		console.error("invalid cron:", error.message);
 		throw new Error("invalid cron expression");
 	}
 	revalidatePath("/workflows  ");

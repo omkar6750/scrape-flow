@@ -35,7 +35,6 @@ export async function POST(request: Request) {
 
 		return new NextResponse(null, { status: 200 });
 	} catch (error) {
-		console.error("Stripe webhook error", error);
 		return new NextResponse("webhook error", { status: 400 });
 	}
 }
